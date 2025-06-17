@@ -19,12 +19,12 @@ jobs:
       # Install SFML with vcpkg - separate per OS for path and shell correctness
       - name: Install SFML with vcpkg (Windows)
         if: matrix.os == 'windows-latest'
-        run: .\vcpkg\vcpkg.exe install sfml
+        run: $env:VCPKG_ROOT\vcpkg.exe install sfml
         shell: cmd
 
       - name: Install SFML with vcpkg (Linux/macOS)
         if: matrix.os != 'windows-latest'
-        run: ./vcpkg/vcpkg install sfml
+        run: $VCPKG_ROOT/vcpkg install sfml
         shell: bash
 
       # Install build tools and dependencies per OS
@@ -65,12 +65,12 @@ jobs:
       # Configure project
       - name: Configure project (Linux/macOS)
         if: matrix.os != 'windows-latest'
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake -G Ninja
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -G Ninja
         shell: bash
 
       - name: Configure project (Windows)
         if: matrix.os == 'windows-latest'
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=.\vcpkg\scripts\buildsystems\vcpkg.cmake -G Ninja
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\\scripts\\buildsystems\\vcpkg.cmake -G Ninja
         shell: cmd
 
       # Run clang-tidy
