@@ -1,0 +1,44 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+AllowShortFunctionsOnASingleLine: Inline
+ColumnLimit: 120
+BreakBeforeBraces: Attach
+
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^"(assets|cmake|engine|examples|scripts|tests|tools|vendor)/'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        3
+SortIncludes: true
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: Align
+AllowShortBlocksOnASingleLine: false
+
+AlwaysBreakTemplateDeclarations: Yes
+BinPackParameters: false
+BinPackArguments: false
+
+CommentPragmas: '^ IWYU pragma:'
+MacroBlockBegin: '^BEGIN_.*'
+MacroBlockEnd: '^END_.*'
+
+EmptyLineAfterAccessModifier: Always
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+NamespaceIndentation: All
+IndentCaseLabels: true
+IndentGotoLabels: false
+
