@@ -15,7 +15,7 @@ jobs:
 
       # Setup vcpkg using manifest mode (uses vcpkg.json automatically)
       - name: Setup vcpkg
-        uses: lukka/get-vcpkg@v13
+        uses: lukka/get-vcpkg
 
       # Install build tools and dependencies per OS
       - name: Install dependencies (Linux)
