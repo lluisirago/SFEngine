@@ -13,9 +13,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup vcpkg
+        uses: lukka/get-vcpkg@v34
+
+      # Install SFML with vcpkg - separate per OS for path and shell correctness
+      - name: Install SFML with vcpkg (Windows)
+        if: matrix.os == 'windows-latest'
+        run: .\vcpkg\vcpkg.exe install sfml
+        shell: cmd
+
+      - name: Install SFML with vcpkg (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: ./vcpkg/vcpkg install sfml
+        shell: bash
+
+      # Install build tools and dependencies per OS
       - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt update && sudo apt install -y clang clang-tidy clang-format cmake ninja-build libx11-dev libgl1-mesa-dev libglu1-mesa-dev libudev-dev
+        run: |
+          sudo apt update
+          sudo apt install -y clang clang-tidy clang-format cmake ninja-build libx11-dev libgl1-mesa-dev libglu1-mesa-dev libudev-dev
+        shell: bash
 
       - name: Install dependencies (macOS)
         if: matrix.os == 'macos-latest'
@@ -23,25 +41,58 @@ jobs:
           brew update
           brew install llvm cmake ninja
           echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> $GITHUB_ENV
+        shell: bash
 
       - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Check formatting
+      # Check formatting - Linux and macOS only because of find command syntax
+      - name: Check formatting (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         run: clang-format --dry-run --Werror $(find src/ include/ -name '*.cpp' -o -name '*.hpp' -o -name '*.h')
         shell: bash
 
-      - name: Configure project
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G Ninja
-        shell: bash
-
-      - name: Run clang-tidy
+      # Check formatting Windows alternative (powershell)
+      - name: Check formatting (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          python3 scripts/run-clang-tidy.py -p build -quiet
+          Get-ChildItem -Path src,include -Include *.cpp,*.hpp,*.h -Recurse | ForEach-Object {
+            clang-format --dry-run --Werror $_.FullName
+          }
+        shell: pwsh
+
+      # Configure project
+      - name: Configure project (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake -G Ninja
         shell: bash
 
-      - name: Build
+      - name: Configure project (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=.\vcpkg\scripts\buildsystems\vcpkg.cmake -G Ninja
+        shell: cmd
+
+      # Run clang-tidy
+      - name: Run clang-tidy (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: python3 scripts/run-clang-tidy.py -p build -quiet
+        shell: bash
+
+      - name: Run clang-tidy (Windows)
+        if: matrix.os == 'windows-latest'
+        run: python scripts/run-clang-tidy.py -p build -quiet
+        shell: cmd
+
+      # Build project
+      - name: Build (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         run: cmake --build build
         shell: bash
+
+      - name: Build (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cmake --build build
+        shell: cmd
+
 
