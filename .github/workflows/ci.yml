@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt update && sudo apt install -y clang clang-tidy clang-format cmake ninja-build
+        run: sudo apt update && sudo apt install -y clang clang-tidy clang-format cmake ninja-build libx11-dev
 
       - name: Install dependencies (macOS)
         if: matrix.os == 'macos-latest'
