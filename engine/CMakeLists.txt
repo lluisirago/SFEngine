@@ -34,7 +34,6 @@ file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
 target_sources(SFEngine PRIVATE ${ENGINE_SRC} ${ENGINE_HEADERS})
 
 # Link SFML as required dependency
-find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
 
 target_link_libraries(SFEngine
     PUBLIC
@@ -61,7 +60,3 @@ endif()
 if(SFENGINE_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     enable_sanitizers(TARGET SFEngine)
 endif()
-
-# Installation (header + library)
-install(TARGETS SFEngine EXPORT SFEngineTargets)
-install(DIRECTORY include/ DESTINATION include)

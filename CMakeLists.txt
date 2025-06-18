@@ -51,8 +51,9 @@ add_subdirectory(engine)
 # ============================
 # Examples
 # ============================
+
 if(SFENGINE_BUILD_EXAMPLES)
-    add_subdirectory(examples/sandbox)
+    # add_subdirectory(examples/sandbox)
 endif()
 
 # ============================
@@ -65,8 +66,8 @@ endif()
 # ============================
 # Warnings and Sanitizers
 # ============================
-if(SFENGINE_ENABLE_WARNINGS)
-    enable_compiler_warnings(TARGET SFEngine)
+if(SFENGINE_ENABLE_WARNINGS AND TARGET SFEngine)
+    enable_compiler_warnings(SFEngine)
 endif()
 
 if(SFENGINE_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
