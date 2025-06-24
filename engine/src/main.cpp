@@ -7,5 +7,5 @@ int main() {
 }
 
 int unused_function() {
-    return 43;
+    return 44;
 }
