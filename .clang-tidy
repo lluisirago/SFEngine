@@ -1,0 +1,28 @@
+---
+# Habilita estos checks (se puede afinar a tus necesidades)
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  misc-unused-parameters,
+  cppcoreguidelines-*
+
+# No convertir warnings en errores para que los veas bien
+WarningsAsErrors: ''
+
+# Aplica solo a archivos bajo include/ y engine/src/, puedes modificar según proyecto
+HeaderFilterRegex: '^(include|engine/src)/'
+
+# Formato de salida sin modificar el código
+FormatStyle: none
+
+# Opciones de algunos checks (puedes afinar o eliminar)
+CheckOptions:
+  - key:             readability-braces-around-statements.ShortStatementLines
+    value:           '1'
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+
+---

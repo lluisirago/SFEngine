@@ -1,24 +1,86 @@
 #!/bin/bash
 
-set -e
+### FUNCTIONS ###
+# Function to check and install clang tools
+install_clang_tool() {
+    local tool="$1"
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "[clang] $tool is not installed"
 
-HOOK_SOURCE="scripts/pre-commit"
-HOOK_TARGET=".git/hooks/pre-commit"
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "[clang] Attempting to install $tool on Linux..."
+            sudo apt-get update && sudo apt-get install -y clang-format clang-tidy
+            return $?
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "[clang] Attempting to install $tool on macOS..."
+            if command -v brew >/dev/null 2>&1; then
+                brew install llvm
+                return $?
+            else
+                echo "[clang] Homebrew is not installed. Please install $tool manually"
+                return 1
+            fi
+        else
+            echo "[clang] Automatic installation of $tool is not supported on this OS"
+            echo "[clang] Please install $tool manually"
+            return 1
+        fi
+    else
+        echo "[clang] $tool is already installed"
+        return 0
+    fi
+}
 
-# Ensure we are in a Git repository
-if [ ! -d ".git" ]; then
-    echo "This script must be run from the root of a Git repository."
+# Function to install the pre-commit hook
+install_precommit_hook() {
+    local HOOK_SOURCE="scripts/pre-commit"
+    local HOOK_TARGET=".git/hooks/pre-commit"
+
+    # Ensure we are in a Git repository
+    if [ ! -d ".git" ]; then
+        echo "[hooks] This script must be run from the root of a Git repository"
+        return 1
+    fi
+
+    # Check if the source hook script exists
+    if [ ! -f "$HOOK_SOURCE" ]; then
+        echo "[hooks] Hook script not found at $HOOK_SOURCE"
+        return 1
+    fi
+
+    # Copy the pre-commit hook and make it executable
+    cp "$HOOK_SOURCE" "$HOOK_TARGET"
+    chmod +x "$HOOK_TARGET"
+
+    echo "[hooks] Pre-commit hook installed at $HOOK_TARGET"
+    return 0
+}
+
+### SETUP ###
+# Clang tools
+echo "Checking clang tools..."
+
+install_clang_tool clang-format
+clang_format_status=$?
+install_clang_tool clang-tidy
+clang_tidy_status=$?
+
+if [[ $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+    echo "Failed to install some clang tools"
+    echo "Please review the messages above and install them manually if needed"
+else
+    echo "All required clang tools are installed"
+fi
+
+# Hooks
+echo "Setting hooks..."
+
+if install_precommit_hook; then
+    echo "All required hooks are installed"
+else
+    echo "Failed to install some hooks"
+    echo "Please review the messages above and install them manually if needed"
     exit 1
 fi
 
-# Check if the source hook script exists
-if [ ! -f "$HOOK_SOURCE" ]; then
-    echo "Hook script not found at $HOOK_SOURCE"
-    exit 1
-fi
-
-# Copy the pre-commit hook and make it executable
-cp "$HOOK_SOURCE" "$HOOK_TARGET"
-chmod +x "$HOOK_TARGET"
-
-echo "Pre-commit hook successfully installed at $HOOK_TARGET"
+echo -e "\nSetup complete"
