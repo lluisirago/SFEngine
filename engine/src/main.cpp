@@ -6,6 +6,8 @@ int main() {
     return 0;
 }
 
+// engine/src/main.cpp
 int unused_function() {
-    return 44;
+    int x = 42;  // variable no usada -> debería salir advertencia
+    return 0;
 }
