@@ -1,8 +1,0 @@
-function(enable_sanitizers TARGET)
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-        target_compile_options(${TARGET} PRIVATE -fsanitize=address,undefined)
-        target_link_options(${TARGET} PRIVATE -fsanitize=address,undefined)
-    elseif (MSVC)
-        message(WARNING "Sanitizers not supported on MSVC.")
-    endif()
-endfunction()
