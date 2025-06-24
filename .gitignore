@@ -47,3 +47,5 @@ compile_commands.json
 # === Mac/Linux system files ===
 .DS_Store
 Thumbs.db
+
+desktop.ini
