@@ -1,0 +1,29 @@
+# SFEngine
+
+SFEngine is a simple C++ graphics engine designed to facilitate the development of high-performance and flexible 2D games. Includes integration with SFML, static code analysis tools, and multi-platform configuration.
+
+---
+
+## Requirements
+
+- CMake >= 3.21
+- Git
+
+---
+
+## Instalation and configuration
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/lluisirago/SFEngine.git
+    cd SFEngine
+    ```
+2. Run the setup script (used for auto formatting and code analysis)
+    ```bash
+    ./setup
+    ```
+3. Build the project
+    ```bash
+    cmake -S . -B build
+    cmake --build build
+    ```
