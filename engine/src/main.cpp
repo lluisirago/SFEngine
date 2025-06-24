@@ -5,3 +5,7 @@ int main() {
     int c       = 0;
     return 0;
 }
+
+int unused_function() {
+    return 42;
+}
