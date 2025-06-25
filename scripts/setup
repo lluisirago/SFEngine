@@ -34,7 +34,8 @@ install_cmake() {
 install_opengl() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         # linux
-        if ldconfig -p | grep -q "libGL.so"; then
+        LIBGL_PATH=$(ldconfig -p | grep "libGL.so" | head -n1 | awk '{print $4}')
+        if [[ -f "/usr/include/GL/gl.h" && -n "$LIBGL_PATH" ]]; then
             echo "[opengl] OpenGL is already installed"
         else
             echo "[opengl] Attempting to install OpenGL..."
