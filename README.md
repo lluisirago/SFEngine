@@ -19,7 +19,7 @@ SFEngine is a simple C++ graphics engine designed to facilitate the development 
     ```
 2. Run the setup script (used for auto installing required tools)
     ```bash
-    chmod +x ./scripts/setup.sh
+    chmod +x ./scripts/setup
     ./scripts/setup
     ```
 3. Build the project
