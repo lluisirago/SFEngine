@@ -189,7 +189,7 @@ install_vorbis() {
                 brew install libvorbis
             fi
         else
-            echo "[vorbis] Homebrew not installed. Please install VORBIS manually"
+            echo "[vorbis] Homebrew is not installed. Please install VORBIS manually"
             return 1
         fi
 
@@ -209,6 +209,61 @@ install_vorbis() {
     else
         echo "[vorbis] Automatic installation of VORBIS is not supported on this OS"
         echo "[vorbis] Please install VORBIS manually"
+        return 1
+    fi
+}
+
+# Function to check and install libFLAC (Free Lossless Audio Codec)
+install_flac() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        local has_so=false
+        local has_header=false
+
+        if ldconfig -p | grep -q "libFLAC.so"; then
+            has_so=true
+        fi
+
+        if [[ -f "/usr/include/FLAC/stream_decoder.h" ]]; then
+            has_header=true
+        fi
+
+        if [[ "$has_so" == true && "$has_header" == true ]]; then
+            echo "[flac] FLAC is already installed"
+        else
+            echo "[flac] FLAC is not installed"
+            echo "[flac] Attempting to install FLAC..."
+            sudo apt-get update && sudo apt-get install -y libflac-dev
+        fi
+
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if command -v brew >/dev/null 2>&1; then
+            if brew list | grep -q "^flac$"; then
+                echo "[flac] FLAC is already installed"
+            else
+                echo "[flac] Attempting to install FLAC..."
+                brew install flac
+            fi
+        else
+            echo "[flac] Homebrew is not installed. Please install VORBIS manually"
+            return 1
+        fi
+
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        if ! command -v pacman >/dev/null 2>&1; then
+            echo "[flac] Pacman is not installed. Please install FLAC manually"
+            return 1
+        fi
+
+        if pacman -Q mingw-w64-x86_64-flac &>/dev/null; then
+            echo "[flac] FLAC is already installed"
+        else
+            echo "[flac] Attempting to install FLAC..."
+            pacman -S --noconfirm mingw-w64-x86_64-flac
+        fi
+
+    else
+        echo "[flac] Automatic installation of FLAC is not supported on this OS"
+        echo "[flac] Please install FLAC manually"
         return 1
     fi
 }
@@ -296,6 +351,11 @@ echo "Checking VORBIS..."
 install_vorbis
 vorbis_status=$?
 
+# FLAC
+echo "Checking FLAC..."
+install_flac
+flac_status=$?
+
 ## Clang tools ##
 echo "Checking clang tools..."
 install_clang_tool clang-format
@@ -304,7 +364,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $flac_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
