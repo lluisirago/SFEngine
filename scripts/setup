@@ -158,6 +158,61 @@ install_openal() {
     fi
 }
 
+# Function to check and install vorbis
+install_vorbis() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        local has_so=false
+        local has_header=false
+
+        if ldconfig -p | grep -q "libvorbis.so"; then
+            has_so=true
+        fi
+
+        if [[ -f "/usr/include/vorbis/vorbisfile.h" ]]; then
+            has_header=true
+        fi
+
+        if [[ "$has_so" == true && "$has_header" == true ]]; then
+            echo "[vorbis] VORBIS is already installed"
+        else
+            echo "[vorbis] VORBIS is not installed"
+            echo "[vorbis] Attempting to install VORBIS..."
+            sudo apt-get update && sudo apt-get install -y libvorbis-dev
+        fi
+
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if command -v brew >/dev/null 2>&1; then
+            if brew list | grep -q "^libvorbis$"; then
+                echo "[vorbis] VORBIS is already installed"
+            else
+                echo "[vorbis] Attempting to install VORBIS..."
+                brew install libvorbis
+            fi
+        else
+            echo "[vorbis] Homebrew not installed. Please install VORBIS manually"
+            return 1
+        fi
+
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        if ! command -v pacman >/dev/null 2>&1; then
+            echo "[vorbis] Pacman is not installed. Please install VORBIS manually"
+            return 1
+        fi
+
+        if pacman -Q mingw-w64-x86_64-libvorbis &>/dev/null; then
+            echo "[vorbis] VORBIS is already installed"
+        else
+            echo "[vorbis] Attempting to install VORBIS..."
+            pacman -S --noconfirm mingw-w64-x86_64-libvorbis
+        fi
+
+    else
+        echo "[vorbis] Automatic installation of VORBIS is not supported on this OS"
+        echo "[vorbis] Please install VORBIS manually"
+        return 1
+    fi
+}
+
 # Function to check and install clang tools
 install_clang_tool() {
     local tool="$1"
@@ -236,6 +291,11 @@ echo "Checking OpenAL..."
 install_openal
 openal_status=$?
 
+# VORBIS
+echo "Checking VORBIS..."
+install_vorbis
+vorbis_status=$?
+
 ## Clang tools ##
 echo "Checking clang tools..."
 install_clang_tool clang-format
@@ -244,7 +304,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
