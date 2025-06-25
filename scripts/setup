@@ -164,6 +164,7 @@ clang_tidy_status=$?
 if [[ $cmake_status -ne 0 || $sfml_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
+    exit 1
 else
     echo "All required tools are installed"
 fi
