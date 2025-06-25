@@ -7,11 +7,11 @@ install_cmake() {
         echo "[cmake] CMake is not installed"
 
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            echo "[cmake] Attempting to install CMake on Linux..."
+            echo "[cmake] Attempting to install CMake..."
             sudo apt-get update && sudo apt-get install -y cmake
             return $?
         elif [[ "$OSTYPE" == "darwin"* ]]; then
-            echo "[cmake] Attempting to install CMake on macOS..."
+            echo "[cmake] Attempting to install CMake..."
             if command -v brew >/dev/null 2>&1; then
                 brew install cmake
                 return $?
@@ -27,6 +27,48 @@ install_cmake() {
     else
         echo "[cmake] CMake is already installed"
         return 0
+    fi
+}
+
+# Function to check and install OpenGL
+install_opengl() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # linux
+        if ldconfig -p | grep -q "libGL.so"; then
+            echo "[opengl] OpenGL is already installed"
+        else
+            echo "[opengl] Attempting to install OpenGL..."
+            sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
+        fi
+
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        if [ -e "/System/Library/Frameworks/OpenGL.framework" ]; then
+            echo "[opengl] OpenGL framework found"
+        else
+            echo "[opengl] OpenGL not found. It's required and usually provided by macOS."
+            echo "          If you're using a custom toolchain, ensure it links against the system OpenGL framework:"
+            echo "          /System/Library/Frameworks/OpenGL.framework"
+        fi
+
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        # windows (MSYS2)
+        if ! command -v pacman >/dev/null 2>&1; then
+            echo "[opengl] Pacman is not installed. Please install OpenGL manually"
+            return 1
+        fi
+
+        if pacman -Q mingw-w64-x86_64-opengl &>/dev/null; then
+            echo "[opengl] OpenGL is already installed"
+        else
+            echo "[opengl] Attempting to install OpenGL..."
+            pacman -S --noconfirm mingw-w64-x86_64-opengl
+        fi
+
+
+    else
+        echo "[opengl] Automatic installation of OpenGL is not supported on this OS"
+        echo "[opengl] Please install OpenGL manually"
     fi
 }
 
@@ -92,6 +134,11 @@ echo "Checking CMake..."
 install_cmake
 cmake_status=$?
 
+# OpenGL (required by SFML)
+echo "Checking OpenGL..."
+install_opengl
+opengl_status=$?
+
 # Clang tools
 echo "Checking clang tools..."
 install_clang_tool clang-format
@@ -100,7 +147,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
