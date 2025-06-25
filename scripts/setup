@@ -82,7 +82,7 @@ install_sfml() {
                 return 0
             else
                 echo "[sfml] SFML is not installed"
-                echo "[sfml] To install SFML manually go to https://www.sfml-dev.org/download.php and download SFML-2.5.0"
+                echo "[sfml] To install SFML manually go to https://www.sfml-dev.org/download.php and download SFML-2.6.1"
                 echo "       then extract the contents of the ZIP to the path: C:/Program Files"
                 return 1
             fi
