@@ -6,7 +6,7 @@ SFEngine is a simple C++ graphics engine designed to facilitate the development 
 
 ## Requirements
 
-- Git
+- git
 
 ---
 
