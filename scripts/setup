@@ -75,18 +75,27 @@ install_opengl() {
     fi
 }
 
-# Function to check and install udev
+# Function to check and install libudev (Linux only)
 install_udev() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        # Check if udev is installed by querying the package manager
-        if dpkg -s udev >/dev/null 2>&1; then
+        local has_so=false
+        local has_header=false
+
+        if ldconfig -p | grep -q "libudev.so"; then
+            has_so=true
+        fi
+
+        if [[ -f "/usr/include/libudev.h" || -f "/usr/include/udev/libudev.h" ]]; then
+            has_header=true
+        fi
+
+        if [[ "$has_so" == true && "$has_header" == true ]]; then
             echo "[udev] UDev is already installed"
         else
             echo "[udev] UDev is not installed"
             echo "[udev] Attempting to install UDev..."
-            sudo apt-get update && sudo apt-get install -y udev
+            sudo apt-get update && sudo apt-get install -y libudev-dev
         fi
-
     else
         echo "[udev] UDev is not necessary on this OS"
     fi
