@@ -3,7 +3,7 @@
 FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(cpp|hpp|h)$')
 
 if [[ -z "$FILES" ]]; then
-    echo "No C++ files to check."
+    echo "No C++ files to check"
     exit 0
 fi
 
@@ -17,4 +17,4 @@ for file in $FILES; do
     clang-tidy $file -- -Iinclude -std=c++17
 done
 
-echo "Pre-commit checks passed."
+echo "Pre-commit checks passed"
