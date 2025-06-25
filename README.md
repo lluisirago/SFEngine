@@ -17,7 +17,7 @@ SFEngine is a simple C++ graphics engine designed to facilitate the development 
     git clone https://github.com/lluisirago/SFEngine.git
     cd SFEngine
     ```
-2. Run the setup script (used for auto formatting and code analysis)
+2. Run the setup script (used for auto installing required tools)
     ```bash
     chmod +x ./scripts/setup.sh
     ./scripts/setup
