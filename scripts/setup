@@ -32,8 +32,6 @@ install_cmake() {
 
 # Function to check and install sfml
 install_sfml() {
-    echo "[sfml] Checking for SFML..."
-
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         # Linux
         if dpkg -s libsfml-dev &>/dev/null; then
@@ -162,8 +160,9 @@ clang_tidy_status=$?
 
 # Tools summary
 if [[ $cmake_status -ne 0 || $sfml_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
-    echo "Failed to install some tools"
-    echo "Please review the messages above and install them manually if needed"
+    echo -e "\n---"
+    echo "[ERROR] Failed to install some tools"
+    echo "[ERROR] Please review the messages above and install them manually if needed"
     exit 1
 else
     echo "All required tools are installed"
@@ -175,8 +174,9 @@ echo "Setting hooks..."
 if install_precommit_hook; then
     echo "All required hooks are installed"
 else
-    echo "Failed to install some hooks"
-    echo "Please review the messages above and install them manually if needed"
+    echo -e "\n---"
+    echo "[ERROR] Failed to install some hooks"
+    echo "[ERROR] Please review the messages above and install them manually if needed"
     exit 1
 fi
 
