@@ -36,7 +36,7 @@ target_sources(SFEngine PRIVATE ${ENGINE_SRC} ${ENGINE_HEADERS})
 # Link SFML as required dependency
 
 target_link_libraries(SFEngine
-    PUBLIC
+    PRIVATE
         sfml-system
         sfml-window
         sfml-graphics

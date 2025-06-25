@@ -30,277 +30,61 @@ install_cmake() {
     fi
 }
 
-# Function to check and install OpenGL
-install_opengl() {
+# Function to check and install sfml
+install_sfml() {
+    echo "[sfml] Checking for SFML..."
+
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        # linux
-        LIBGL_PATH=$(ldconfig -p | grep "libGL.so" | head -n1 | awk '{print $4}')
-        if [[ -f "/usr/include/GL/gl.h" && -n "$LIBGL_PATH" ]]; then
-            echo "[opengl] OpenGL is already installed"
+        # Linux
+        if dpkg -s libsfml-dev &>/dev/null; then
+            echo "[sfml] SFML is already installed"
         else
-            echo "[opengl] OpenGL is not installed"
-            echo "[opengl] Attempting to install OpenGL..."
-            sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
+            echo "[sfml] SFML is not installed"
+            echo "[sfml] Attempting to install SFML..."
+            sudo apt-get update && sudo apt-get install -y libsfml-dev
+            return $?
         fi
 
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        if [ -e "/System/Library/Frameworks/OpenGL.framework" ]; then
-            echo "[opengl] OpenGL framework found"
+        if brew list sfml &>/dev/null; then
+            echo "[sfml] SFML is already installed"
         else
-            echo "[opengl] OpenGL not found. It's required and usually provided by macOS."
-            echo "          If you're using a custom toolchain, ensure it links against the system OpenGL framework:"
-            echo "          /System/Library/Frameworks/OpenGL.framework"
-        fi
-
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        # windows (MSYS2)
-        if ! command -v pacman >/dev/null 2>&1; then
-            echo "[opengl] Pacman is not installed. Please install OpenGL manually"
-            return 1
-        fi
-
-        if pacman -Q mingw-w64-x86_64-opengl &>/dev/null; then
-            echo "[opengl] OpenGL is already installed"
-        else
-            echo "[opengl] OpenGL is not installed"
-            echo "[opengl] Attempting to install OpenGL..."
-            pacman -S --noconfirm mingw-w64-x86_64-opengl
-        fi
-
-
-    else
-        echo "[opengl] Automatic installation of OpenGL is not supported on this OS"
-        echo "[opengl] Please install OpenGL manually"
-        return 1
-    fi
-}
-
-# Function to check and install libudev (Linux only)
-install_udev() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        local has_so=false
-        local has_header=false
-
-        if ldconfig -p | grep -q "libudev.so"; then
-            has_so=true
-        fi
-
-        if [[ -f "/usr/include/libudev.h" || -f "/usr/include/udev/libudev.h" ]]; then
-            has_header=true
-        fi
-
-        if [[ "$has_so" == true && "$has_header" == true ]]; then
-            echo "[udev] UDev is already installed"
-        else
-            echo "[udev] UDev is not installed"
-            echo "[udev] Attempting to install UDev..."
-            sudo apt-get update && sudo apt-get install -y libudev-dev
-        fi
-    else
-        echo "[udev] UDev is not necessary on this OS"
-    fi
-}
-
-# Function to check and install OpenAL
-install_openal() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        local has_so=false
-        local has_header=false
-
-        if ldconfig -p | grep -q "libopenal.so"; then
-            has_so=true
-        fi
-
-        if [[ -f "/usr/include/AL/al.h" ]]; then
-            has_header=true
-        fi
-
-        if [[ "$has_so" == true && "$has_header" == true ]]; then
-            echo "[openal] OpenAL is already installed"
-        else
-            echo "[openal] OpenAL is not installed"
-            echo "[openal] Attempting to install OpenAL..."
-            sudo apt-get update && sudo apt-get install -y libopenal-dev
-        fi
-
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        if [ -d "/System/Library/Frameworks/OpenAL.framework" ]; then
-            echo "[openal] OpenAL framework found"
-        else
-            echo "[openal] OpenAL framework not found"
-            echo "[openal] Attempting to install OpenAL..."
+            echo "[sfml] SFML is not installed"
+            echo "[sfml] Attempting to install SFML..."
             if command -v brew >/dev/null 2>&1; then
-                brew install openal-soft
+                brew install sfml
+                return $?
             else
-                echo "[openal] Homebrew not installed. Please install OpenAL manually"
+                echo "[sfml] Homebrew is not installed. Please install SFML manually."
                 return 1
             fi
         fi
 
     elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        if ! command -v pacman >/dev/null 2>&1; then
-            echo "[openal] Pacman is not installed. Please install OpenAL manually"
+        # Windows (MSYS2)
+        if ! command -v pacman &>/dev/null; then
+            echo "[sfml] Pacman not found. Please install SFML manually."
             return 1
         fi
 
-        if pacman -Q mingw-w64-x86_64-openal &>/dev/null; then
-            echo "[openal] OpenAL is already installed"
+        if pacman -Q mingw-w64-x86_64-sfml &>/dev/null; then
+            echo "[sfml] SFML is already installed"
         else
-            echo "[openal] Attempting to install OpenAL..."
-            pacman -S --noconfirm mingw-w64-x86_64-openal
+            echo "[sfml] SFML is not installed"
+            echo "[sfml] Attempting to install SFML..."
+            pacman -S --noconfirm mingw-w64-x86_64-sfml
+            return $?
         fi
 
     else
-        echo "[openal] Automatic installation of OpenAL is not supported on this OS"
-        echo "[openal] Please install OpenAL manually"
+        echo "[sfml] Automatic installation of SFML is not supported on this OS"
+        echo "[sfml] Please install SFML manually"
         return 1
     fi
+
+    return 0
 }
-
-# Function to check and install vorbis
-install_vorbis() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        local has_so=false
-        local has_header=false
-
-        if ldconfig -p | grep -q "libvorbis.so"; then
-            has_so=true
-        fi
-
-        if [[ -f "/usr/include/vorbis/vorbisfile.h" ]]; then
-            has_header=true
-        fi
-
-        if [[ "$has_so" == true && "$has_header" == true ]]; then
-            echo "[vorbis] VORBIS is already installed"
-        else
-            echo "[vorbis] VORBIS is not installed"
-            echo "[vorbis] Attempting to install VORBIS..."
-            sudo apt-get update && sudo apt-get install -y libvorbis-dev
-        fi
-
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        if command -v brew >/dev/null 2>&1; then
-            if brew list | grep -q "^libvorbis$"; then
-                echo "[vorbis] VORBIS is already installed"
-            else
-                echo "[vorbis] Attempting to install VORBIS..."
-                brew install libvorbis
-            fi
-        else
-            echo "[vorbis] Homebrew is not installed. Please install VORBIS manually"
-            return 1
-        fi
-
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        if ! command -v pacman >/dev/null 2>&1; then
-            echo "[vorbis] Pacman is not installed. Please install VORBIS manually"
-            return 1
-        fi
-
-        if pacman -Q mingw-w64-x86_64-libvorbis &>/dev/null; then
-            echo "[vorbis] VORBIS is already installed"
-        else
-            echo "[vorbis] Attempting to install VORBIS..."
-            pacman -S --noconfirm mingw-w64-x86_64-libvorbis
-        fi
-
-    else
-        echo "[vorbis] Automatic installation of VORBIS is not supported on this OS"
-        echo "[vorbis] Please install VORBIS manually"
-        return 1
-    fi
-}
-
-# Function to check and install libFLAC (Free Lossless Audio Codec)
-install_flac() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        local has_so=false
-        local has_header=false
-
-        if ldconfig -p | grep -q "libFLAC.so"; then
-            has_so=true
-        fi
-
-        if [[ -f "/usr/include/FLAC/stream_decoder.h" ]]; then
-            has_header=true
-        fi
-
-        if [[ "$has_so" == true && "$has_header" == true ]]; then
-            echo "[flac] FLAC is already installed"
-        else
-            echo "[flac] FLAC is not installed"
-            echo "[flac] Attempting to install FLAC..."
-            sudo apt-get update && sudo apt-get install -y libflac-dev
-        fi
-
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        if command -v brew >/dev/null 2>&1; then
-            if brew list | grep -q "^flac$"; then
-                echo "[flac] FLAC is already installed"
-            else
-                echo "[flac] Attempting to install FLAC..."
-                brew install flac
-            fi
-        else
-            echo "[flac] Homebrew is not installed. Please install VORBIS manually"
-            return 1
-        fi
-
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        if ! command -v pacman >/dev/null 2>&1; then
-            echo "[flac] Pacman is not installed. Please install FLAC manually"
-            return 1
-        fi
-
-        if pacman -Q mingw-w64-x86_64-flac &>/dev/null; then
-            echo "[flac] FLAC is already installed"
-        else
-            echo "[flac] Attempting to install FLAC..."
-            pacman -S --noconfirm mingw-w64-x86_64-flac
-        fi
-
-    else
-        echo "[flac] Automatic installation of FLAC is not supported on this OS"
-        echo "[flac] Please install FLAC manually"
-        return 1
-    fi
-}
-
-# Function to check and install x11
-install_x11() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "[x11] Checking X11..."
-
-        REQUIRED_PACKAGES=(
-            libx11-dev
-            libxrandr-dev
-            libxext-dev
-            libxcursor-dev
-            libxi-dev
-            libxinerama-dev
-        )
-
-        MISSING_PACKAGES=()
-
-        for pkg in "${REQUIRED_PACKAGES[@]}"; do
-            if ! dpkg -s "$pkg" &>/dev/null; then
-                MISSING_PACKAGES+=("$pkg")
-            fi
-        done
-
-        if [[ ${#MISSING_PACKAGES[@]} -eq 0 ]]; then
-            echo "[x11] All required X11 packages are already installed"
-        else
-            echo "[x11] Installing missing X11 packages: ${MISSING_PACKAGES[*]}"
-            sudo apt-get update && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
-        fi
-    else
-        echo "[x11] X11 is not necessary on this OS"
-    fi
-}
-
 
 # Function to check and install clang tools
 install_clang_tool() {
@@ -364,38 +148,12 @@ echo "Checking CMake..."
 install_cmake
 cmake_status=$?
 
-## SFML required ##
-# OpenGL
-echo "Checking OpenGL..."
-install_opengl
-opengl_status=$?
+# SFML
+echo "Checking SFML..."
+install_sfml
+sfml_status=$?
 
-# UDev
-echo "Checking UDev..."
-install_udev
-udev_status=$?
-
-# OpenAL
-echo "Checking OpenAL..."
-install_openal
-openal_status=$?
-
-# VORBIS
-echo "Checking VORBIS..."
-install_vorbis
-vorbis_status=$?
-
-# FLAC
-echo "Checking FLAC..."
-install_flac
-flac_status=$?
-
-# X11
-echo "Checking X11..."
-install_x11
-x11_status=$?
-
-## Clang tools ##
+# Clang tools
 echo "Checking clang tools..."
 install_clang_tool clang-format
 clang_format_status=$?
@@ -403,7 +161,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $flac_status -ne 0 || $x11_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $sfml_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else

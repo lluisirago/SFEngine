@@ -41,7 +41,8 @@ include(FetchDependencies)
 # ============================
 # Dependencies
 # ============================
-fetch_sfml()  # Defined in cmake/FetchDependencies.cmake
+find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
+
 
 # ============================
 # Engine Target
