@@ -269,6 +269,21 @@ install_flac() {
 }
 
 # Function to check and install clang tools
+install_xrandr() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if [[ -f "/usr/include/X11/extensions/Xrandr.h" ]]; then
+            echo "[xrandr] Xrandr is already installed"
+        else
+            echo "[xrandr] Xrandr is not instaled"
+            echo "[xrandr] Attempting to install Xrandr..."
+            sudo apt-get update && sudo apt-get install -y libxrandr-dev
+        fi
+    else
+        echo "[xrandr] Xrandr is not necessary on this OS"
+    fi
+}
+
+# Function to check and install clang tools
 install_clang_tool() {
     local tool="$1"
     if ! command -v "$tool" >/dev/null 2>&1; then
@@ -356,6 +371,11 @@ echo "Checking FLAC..."
 install_flac
 flac_status=$?
 
+# Xranr
+echo "Checking Xrandr..."
+install_xrandr
+xrandr_status=$?
+
 ## Clang tools ##
 echo "Checking clang tools..."
 install_clang_tool clang-format
@@ -364,7 +384,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $flac_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $vorbis_status -ne 0 || $flac_status -ne 0 || $xrandr_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
