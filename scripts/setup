@@ -1,6 +1,35 @@
 #!/bin/bash
 
 ### FUNCTIONS ###
+# Function to install cmake
+install_cmake() {
+    if ! command -v cmake >/dev/null 2>&1; then
+        echo "[cmake] CMake is not installed"
+
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "[cmake] Attempting to install CMake on Linux..."
+            sudo apt-get update && sudo apt-get install -y cmake
+            return $?
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "[cmake] Attempting to install CMake on macOS..."
+            if command -v brew >/dev/null 2>&1; then
+                brew install cmake
+                return $?
+            else
+                echo "[cmake] Homebrew is not installed. Please install CMake manually"
+                return 1
+            fi
+        else
+            echo "[cmake] Automatic installation of CMake is not supported on this OS"
+            echo "[cmake] Please install CMake manually"
+            return 1
+        fi
+    else
+        echo "[cmake] CMake is already installed"
+        return 0
+    fi
+}
+
 # Function to check and install clang tools
 install_clang_tool() {
     local tool="$1"
@@ -56,20 +85,26 @@ install_precommit_hook() {
     return 0
 }
 
+
 ### SETUP ###
+# CMake
+echo "Checking CMake..."
+install_cmake
+cmake_status=$?
+
 # Clang tools
 echo "Checking clang tools..."
-
 install_clang_tool clang-format
 clang_format_status=$?
 install_clang_tool clang-tidy
 clang_tidy_status=$?
 
-if [[ $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
-    echo "Failed to install some clang tools"
+# Tools summary
+if [[ $cmake_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+    echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
-    echo "All required clang tools are installed"
+    echo "All required tools are installed"
 fi
 
 # Hooks
