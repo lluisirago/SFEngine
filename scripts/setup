@@ -63,6 +63,7 @@ install_opengl() {
         if pacman -Q mingw-w64-x86_64-opengl &>/dev/null; then
             echo "[opengl] OpenGL is already installed"
         else
+            echo "[opengl] OpenGL is not installed"
             echo "[opengl] Attempting to install OpenGL..."
             pacman -S --noconfirm mingw-w64-x86_64-opengl
         fi
@@ -71,6 +72,23 @@ install_opengl() {
     else
         echo "[opengl] Automatic installation of OpenGL is not supported on this OS"
         echo "[opengl] Please install OpenGL manually"
+    fi
+}
+
+# Function to check and install udev
+install_udev() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Check if udev is installed by querying the package manager
+        if dpkg -s udev >/dev/null 2>&1; then
+            echo "[udev] UDev is already installed"
+        else
+            echo "[udev] UDev is not installed"
+            echo "[udev] Attempting to install UDev..."
+            sudo apt-get update && sudo apt-get install -y udev
+        fi
+
+    else
+        echo "[udev] UDev is not necessary on this OS"
     fi
 }
 
@@ -141,6 +159,11 @@ echo "Checking OpenGL..."
 install_opengl
 opengl_status=$?
 
+# UDev (required by SFML)
+echo "Checking UDev..."
+install_udev
+udev_status=$?
+
 # Clang tools
 echo "Checking clang tools..."
 install_clang_tool clang-format
@@ -149,7 +172,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
