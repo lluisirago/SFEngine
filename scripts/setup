@@ -61,18 +61,29 @@ install_sfml() {
 
     elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
         # Windows (MSYS2)
-        if ! command -v pacman &>/dev/null; then
-            echo "[sfml] Pacman not found. Please install SFML manually."
-            return 1
-        fi
-
-        if pacman -Q mingw-w64-x86_64-sfml &>/dev/null; then
-            echo "[sfml] SFML is already installed"
+        if command -v pacman &>/dev/null; then
+            if pacman -Q mingw-w64-x86_64-sfml &>/dev/null; then
+                echo "[sfml] SFML is already installed"
+                return 0
+            else
+                echo "[sfml] SFML is not installed"
+                echo "[sfml] Attempting to install SFML..."
+                pacman -S --noconfirm mingw-w64-x86_64-sfml
+                return $?
+            fi
         else
-            echo "[sfml] SFML is not installed"
-            echo "[sfml] Attempting to install SFML..."
-            pacman -S --noconfirm mingw-w64-x86_64-sfml
-            return $?
+            # pacman not installed, try to detect SFML libraries manually
+            # This is a simple heuristic: check if sfml DLLs or libs exist in common MSYS2 directories
+            if ls /mingw64/lib/libsfml* &>/dev/null; then
+                echo "[sfml] SFML is already installed"
+                return 0
+            elif ls /usr/lib/libsfml* &>/dev/null; then
+                echo "[sfml] SFML is already installed"
+                return 0
+            else
+                echo "[sfml] SFML is not installed"
+                return 1
+            fi
         fi
 
     else
@@ -142,16 +153,19 @@ install_precommit_hook() {
 
 ### SETUP ###
 # CMake
+echo -e "---"
 echo "Checking CMake..."
 install_cmake
 cmake_status=$?
 
 # SFML
+echo -e "---"
 echo "Checking SFML..."
 install_sfml
 sfml_status=$?
 
 # Clang tools
+echo -e "---"
 echo "Checking clang tools..."
 install_clang_tool clang-format
 clang_format_status=$?
@@ -159,8 +173,8 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
+echo -e "---"
 if [[ $cmake_status -ne 0 || $sfml_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
-    echo -e "\n---"
     echo "[ERROR] Failed to install some tools"
     echo "[ERROR] Please review the messages above and install them manually if needed"
     exit 1
@@ -169,12 +183,13 @@ else
 fi
 
 # Hooks
+echo -e "---"
 echo "Setting hooks..."
 
+echo -e "---"
 if install_precommit_hook; then
     echo "All required hooks are installed"
 else
-    echo -e "\n---"
     echo "[ERROR] Failed to install some hooks"
     echo "[ERROR] Please review the messages above and install them manually if needed"
     exit 1
