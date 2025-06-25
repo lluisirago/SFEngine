@@ -72,6 +72,7 @@ install_opengl() {
     else
         echo "[opengl] Automatic installation of OpenGL is not supported on this OS"
         echo "[opengl] Please install OpenGL manually"
+        return 1
     fi
 }
 
@@ -98,6 +99,62 @@ install_udev() {
         fi
     else
         echo "[udev] UDev is not necessary on this OS"
+    fi
+}
+
+# Function to check and install OpenAL
+install_openal() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        local has_so=false
+        local has_header=false
+
+        if ldconfig -p | grep -q "libopenal.so"; then
+            has_so=true
+        fi
+
+        if [[ -f "/usr/include/AL/al.h" ]]; then
+            has_header=true
+        fi
+
+        if [[ "$has_so" == true && "$has_header" == true ]]; then
+            echo "[openal] OpenAL is already installed"
+        else
+            echo "[openal] OpenAL is not installed"
+            echo "[openal] Attempting to install OpenAL..."
+            sudo apt-get update && sudo apt-get install -y libopenal-dev
+        fi
+
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if [ -d "/System/Library/Frameworks/OpenAL.framework" ]; then
+            echo "[openal] OpenAL framework found"
+        else
+            echo "[openal] OpenAL framework not found"
+            echo "[openal] Attempting to install OpenAL..."
+            if command -v brew >/dev/null 2>&1; then
+                brew install openal-soft
+            else
+                echo "[openal] Homebrew not installed. Please install OpenAL manually"
+                return 1
+            fi
+        fi
+
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        if ! command -v pacman >/dev/null 2>&1; then
+            echo "[openal] Pacman is not installed. Please install OpenAL manually"
+            return 1
+        fi
+
+        if pacman -Q mingw-w64-x86_64-openal &>/dev/null; then
+            echo "[openal] OpenAL is already installed"
+        else
+            echo "[openal] Attempting to install OpenAL..."
+            pacman -S --noconfirm mingw-w64-x86_64-openal
+        fi
+
+    else
+        echo "[openal] Automatic installation of OpenAL is not supported on this OS"
+        echo "[openal] Please install OpenAL manually"
+        return 1
     fi
 }
 
@@ -163,17 +220,23 @@ echo "Checking CMake..."
 install_cmake
 cmake_status=$?
 
-# OpenGL (required by SFML)
+## SFML required ##
+# OpenGL
 echo "Checking OpenGL..."
 install_opengl
 opengl_status=$?
 
-# UDev (required by SFML)
+# UDev
 echo "Checking UDev..."
 install_udev
 udev_status=$?
 
-# Clang tools
+# OpenAL
+echo "Checking OpenAL..."
+install_openal
+openal_status=$?
+
+## Clang tools ##
 echo "Checking clang tools..."
 install_clang_tool clang-format
 clang_format_status=$?
@@ -181,7 +244,7 @@ install_clang_tool clang-tidy
 clang_tidy_status=$?
 
 # Tools summary
-if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
+if [[ $cmake_status -ne 0 || $opengl_status -ne 0 || $udev_status -ne 0 || $openal_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
     echo "Failed to install some tools"
     echo "Please review the messages above and install them manually if needed"
 else
