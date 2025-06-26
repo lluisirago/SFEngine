@@ -56,7 +56,7 @@ install_sfml() {
         if dpkg -s libsfml-dev &>/dev/null; then
             log "SFML is already installed"
         else
-            log "Installing SFML on Linux..."
+            log "Attempting to install SFML..."
             sudo apt-get update && sudo apt-get install -y libsfml-dev
         fi
 
@@ -64,7 +64,7 @@ install_sfml() {
         if brew list sfml &>/dev/null; then
             log "SFML is already installed"
         else
-            log "Installing SFML on macOS..."
+            log "Attempting to install SFML..."
             if command -v brew >/dev/null 2>&1; then
                 brew install sfml
             else
@@ -116,10 +116,10 @@ install_clang_tool() {
         log "$tool is not installed"
 
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            log "Installing $tool on Linux..."
+            log "Attempting to install $tool..."
             sudo apt-get update && sudo apt-get install -y clang-format clang-tidy
         elif [[ "$OSTYPE" == "darwin"* ]]; then
-            log "Installing $tool on macOS..."
+            log "Attempting to install $tool..."
             if command -v brew >/dev/null 2>&1; then
                 brew install llvm
             else
