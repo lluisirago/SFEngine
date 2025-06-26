@@ -27,3 +27,5 @@ SFEngine is a simple C++ graphics engine designed to facilitate the development 
     cmake -S . -B build
     cmake --build build
     ```
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lluisirago/SFEngine)

@@ -1,3 +1,11 @@
+/**
+ * @file AssetManager.hpp
+ * @author Lluís Irago Montaña <dev.lluisirago@gmail.com>
+ * @date 27/06/2025
+ *
+ * @brief
+ */
+
 #pragma once
 
 #include <fstream>

@@ -1,3 +1,11 @@
+/**
+ * @file AssetManager.cpp
+ * @author Lluís Irago Montaña <dev.lluisirago@gmail.com>
+ * @date 27/06/2025
+ *
+ * @brief
+ */
+
 #include "SFEngine/assets/AssetManager.hpp"
 #include <zlib.h>
 #include <iostream>
