@@ -21,8 +21,8 @@ IncludeCategories:
     Priority:        3
 SortIncludes: true
 
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
 AlignTrailingComments: true
 AlignAfterOpenBracket: Align
 AllowShortBlocksOnASingleLine: false

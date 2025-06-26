@@ -42,7 +42,8 @@ include(FetchDependencies)
 # Dependencies
 # ============================
 find_package(SFML 2.6.1 COMPONENTS system window graphics audio REQUIRED)
-
+fetch_json()
+fetch_zlib()
 
 # ============================
 # Engine Target
@@ -80,8 +81,9 @@ endif()
 # ============================
 install(TARGETS SFEngine EXPORT SFEngineTargets)
 install(DIRECTORY engine/include/ DESTINATION include)
+install(DIRECTORY engine/vendor/ DESTINATION include/vendor)
 install(EXPORT SFEngineTargets
-    FILE SFEngineConfig.cmake
+    FILE SFEngineTargets.cmake
     NAMESPACE SFEngine::
     DESTINATION lib/cmake/SFEngine
 ) 
@@ -90,13 +92,20 @@ install(EXPORT SFEngineTargets
 # Package Export
 # ============================
 include(CMakePackageConfigHelpers)
+
 write_basic_package_version_file(
-    SFEngineConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfigVersion.cmake
-              ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfig.cmake
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/SFEngineConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfig.cmake
+  INSTALL_DESTINATION lib/cmake/SFEngine
+)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/SFEngineConfig.cmake
         DESTINATION lib/cmake/SFEngine
 )
 

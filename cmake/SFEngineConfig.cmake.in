@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/SFEngineTargets.cmake")
+
+include(CMakeFindDependencyMacro)
+find_dependency(SFML 2.6.1 COMPONENTS system window graphics audio REQUIRED)
+find_dependency(nlohmann_json REQUIRED)
+find_dependency(zlib-populate REQUIRED)
