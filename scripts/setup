@@ -1,200 +1,174 @@
 #!/bin/bash
 
+set -euo pipefail
+IFS=$'\n\t'
+
+### GLOBALS ###
+LOG_FILE="./logs/setup_$(date +%d%m%Y_%H%M%S).log"
+
+
+### ERROR HANDLING ###
+error_handler() {
+    local exit_code=$?
+    local line_number=$1
+    echo "[ERROR] Script failed at line $line_number (exit code $exit_code)" | tee -a "$LOG_FILE"
+    echo "[ERROR] Check the log file at $LOG_FILE for details."
+    exit $exit_code
+}
+trap 'error_handler $LINENO' ERR
+
+log() {
+    echo "[INFO] $1" | tee -a "$LOG_FILE"
+}
+
+warn() {
+    echo "[WARN] $1" | tee -a "$LOG_FILE"
+}
+
 ### FUNCTIONS ###
-# Function to install cmake
+
 install_cmake() {
     if ! command -v cmake >/dev/null 2>&1; then
-        echo "[cmake] CMake is not installed"
+        log "CMake is not installed"
 
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            echo "[cmake] Attempting to install CMake..."
+            log "Attempting to install CMake..."
             sudo apt-get update && sudo apt-get install -y cmake
-            return $?
         elif [[ "$OSTYPE" == "darwin"* ]]; then
-            echo "[cmake] Attempting to install CMake..."
+            log "Attempting to install CMake..."
             if command -v brew >/dev/null 2>&1; then
                 brew install cmake
-                return $?
             else
-                echo "[cmake] Homebrew is not installed. Please install CMake manually"
+                warn "Homebrew not found. Please install CMake manually."
                 return 1
             fi
         else
-            echo "[cmake] Automatic installation of CMake is not supported on this OS"
-            echo "[cmake] Please install CMake manually"
+            warn "Unsupported OS for automatic CMake installation"
             return 1
         fi
     else
-        echo "[cmake] CMake is already installed"
-        return 0
+        log "CMake is already installed"
     fi
 }
 
-# Function to check and install sfml
 install_sfml() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        # Linux
         if dpkg -s libsfml-dev &>/dev/null; then
-            echo "[sfml] SFML is already installed"
+            log "SFML is already installed"
         else
-            echo "[sfml] SFML is not installed"
-            echo "[sfml] Attempting to install SFML..."
+            log "Installing SFML on Linux..."
             sudo apt-get update && sudo apt-get install -y libsfml-dev
-            return $?
         fi
 
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
         if brew list sfml &>/dev/null; then
-            echo "[sfml] SFML is already installed"
+            log "SFML is already installed"
         else
-            echo "[sfml] SFML is not installed"
-            echo "[sfml] Attempting to install SFML..."
+            log "Installing SFML on macOS..."
             if command -v brew >/dev/null 2>&1; then
                 brew install sfml
-                return $?
             else
-                echo "[sfml] Homebrew is not installed. Please install SFML manually."
+                warn "Homebrew not found. Please install SFML manually."
                 return 1
             fi
         fi
 
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        # Windows (MSYS2)
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin"* ]]; then
+        # 1. Verificar si pacman puede detectarlo
         if command -v pacman &>/dev/null; then
             if pacman -Q mingw-w64-x86_64-sfml &>/dev/null; then
-                echo "[sfml] SFML is already installed"
+                log "SFML is already installed"
                 return 0
-            else
-                echo "[sfml] SFML is not installed"
-                echo "[sfml] Attempting to install SFML..."
-                pacman -S --noconfirm mingw-w64-x86_64-sfml
-                return $?
-            fi
-        else
-            # pacman not installed, try to detect SFML libraries manually
-            # This is a simple heuristic: check if sfml DLLs or libs exist in common MSYS2 directories
-            if ls /mingw64/lib/libsfml* &>/dev/null; then
-                echo "[sfml] SFML is already installed"
-                return 0
-            elif ls /usr/lib/libsfml* &>/dev/null; then
-                echo "[sfml] SFML is already installed"
-                return 0
-            else
-                echo "[sfml] SFML is not installed"
-                echo "[sfml] To install SFML manually go to https://www.sfml-dev.org/download.php and download SFML-2.6.1"
-                echo "       then extract the contents of the ZIP to the path: C:/Program Files"
-                return 1
             fi
         fi
 
+        # 2. Buscar instalación manual de SFML en "C:/Program Files"
+        for dir in /c/Program\ Files/SFML*; do
+            if [[ -d "$dir/include/SFML" && -d "$dir/lib" ]]; then
+                log "SFML found in '$dir'"
+                export CMAKE_PREFIX_PATH="$dir"
+                return 0
+            fi
+        done
+
+        # 3. Verificar rutas comunes de MSYS2
+        if ls /mingw64/lib/libsfml* &>/dev/null || ls /usr/lib/libsfml* &>/dev/null; then
+            log "SFML found in MSYS2 standard directories"
+            return 0
+        fi
+
+        # 4. No se encontró
+        warn "SFML not detected. Please install it manually from https://www.sfml-dev.org/download.php (v2.6.1)"
+        warn "Expected to find it under: 'C:/Program Files/SFML-*"
+        return 1
+
+
     else
-        echo "[sfml] Automatic installation of SFML is not supported on this OS"
-        echo "[sfml] Please install SFML manually"
+        warn "Unsupported OS for automatic SFML installation"
         return 1
     fi
-
-    return 0
 }
 
-# Function to check and install clang tools
 install_clang_tool() {
     local tool="$1"
+
     if ! command -v "$tool" >/dev/null 2>&1; then
-        echo "[clang] $tool is not installed"
+        log "$tool is not installed"
 
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            echo "[clang] Attempting to install $tool on Linux..."
+            log "Installing $tool on Linux..."
             sudo apt-get update && sudo apt-get install -y clang-format clang-tidy
-            return $?
         elif [[ "$OSTYPE" == "darwin"* ]]; then
-            echo "[clang] Attempting to install $tool on macOS..."
+            log "Installing $tool on macOS..."
             if command -v brew >/dev/null 2>&1; then
                 brew install llvm
-                return $?
             else
-                echo "[clang] Homebrew is not installed. Please install $tool manually"
+                warn "Homebrew not found. Please install $tool manually."
                 return 1
             fi
         else
-            echo "[clang] Automatic installation of $tool is not supported on this OS"
-            echo "[clang] Please install $tool manually"
+            warn "Unsupported OS for automatic installation of $tool"
             return 1
         fi
     else
-        echo "[clang] $tool is already installed"
-        return 0
+        log "$tool is already installed"
     fi
 }
 
-# Function to install the pre-commit hook
 install_precommit_hook() {
     local HOOK_SOURCE="scripts/pre-commit"
     local HOOK_TARGET=".git/hooks/pre-commit"
 
-    # Ensure we are in a Git repository
     if [ ! -d ".git" ]; then
-        echo "[hooks] This script must be run from the root of a Git repository"
+        warn "This script must be run from the root of a Git repository"
         return 1
     fi
 
-    # Check if the source hook script exists
     if [ ! -f "$HOOK_SOURCE" ]; then
-        echo "[hooks] Hook script not found at $HOOK_SOURCE"
+        warn "Hook script not found at $HOOK_SOURCE"
         return 1
     fi
 
-    # Copy the pre-commit hook and make it executable
     cp "$HOOK_SOURCE" "$HOOK_TARGET"
     chmod +x "$HOOK_TARGET"
-
-    echo "[hooks] Pre-commit hook installed at $HOOK_TARGET"
-    return 0
+    log "Pre-commit hook installed"
 }
 
+### MAIN EXECUTION ###
 
-### SETUP ###
-# CMake
-echo -e "---"
-echo "Checking CMake..."
+log "--- Starting Setup ---"
+
+log "Checking CMake..."
 install_cmake
-cmake_status=$?
 
-# SFML
-echo -e "---"
-echo "Checking SFML..."
+log "Checking SFML..."
 install_sfml
-sfml_status=$?
 
-# Clang tools
-echo -e "---"
-echo "Checking clang tools..."
+log "Checking Clang tools..."
 install_clang_tool clang-format
-clang_format_status=$?
 install_clang_tool clang-tidy
-clang_tidy_status=$?
 
-# Tools summary
-echo -e "---"
-if [[ $cmake_status -ne 0 || $sfml_status -ne 0 || $clang_format_status -ne 0 || $clang_tidy_status -ne 0 ]]; then
-    echo "[ERROR] Failed to install some tools"
-    echo "[ERROR] Please review the messages above and install them manually if needed"
-    exit 1
-else
-    echo "All required tools are installed"
-fi
+log "Installing Git hooks..."
+install_precommit_hook
 
-# Hooks
-echo -e "---"
-echo "Setting hooks..."
-
-echo -e "---"
-if install_precommit_hook; then
-    echo "All required hooks are installed"
-else
-    echo "[ERROR] Failed to install some hooks"
-    echo "[ERROR] Please review the messages above and install them manually if needed"
-    exit 1
-fi
-
-echo -e "\nSetup complete"
+log "--- Setup Complete ---"
