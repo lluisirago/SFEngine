@@ -7,7 +7,8 @@ Checks: >
   performance-*,
   readability-*,
   misc-unused-parameters,
-  cppcoreguidelines-*
+  cppcoreguidelines-*,
+  readability-identifier-naming
 
 # No convertir warnings en errores para que los veas bien
 WarningsAsErrors: ''
@@ -24,5 +25,19 @@ CheckOptions:
     value:           '1'
   - key:             modernize-use-nullptr.NullMacros
     value:           'NULL'
+  - key:             readability-identifier-naming.PrivateMemberSuffix
+    value:           _
+  - key:             readability-identifier-naming.PrivateMemberCase
+    value:           camelBack
+  - key:             readability-identifier-naming.MemberCase
+    value:           camelBack
+  - key:             readability-identifier-naming.MethodCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+  - key:             readability-identifier-naming.IgnoreMainLikeFunctions
+    value:           true
 
 ---

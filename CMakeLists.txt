@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.21)
 # ============================
 project(SFEngine
     VERSION 0.1.0
-    DESCRIPTION "Modular C++ game engine based on SFML"
+    DESCRIPTION "Modular C++ graphic engine based on SFML"
     LANGUAGES CXX
 )
 

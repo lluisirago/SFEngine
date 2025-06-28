@@ -75,6 +75,7 @@ const nlohmann::json& AssetManager::getMetadata(const std::string& path) {
 std::vector<char> AssetManager::decompress_zlib(const std::vector<char>& compressed, size_t original_size) {
     std::vector<char> decompressed(original_size);
     uLongf dest_len = original_size;
+
     if (uncompress(reinterpret_cast<Bytef*>(decompressed.data()),
                    &dest_len,
                    reinterpret_cast<const Bytef*>(compressed.data()),
