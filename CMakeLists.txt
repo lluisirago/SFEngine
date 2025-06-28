@@ -15,6 +15,7 @@ project(SFEngine
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ============================
 # Project Options
@@ -53,7 +54,6 @@ add_subdirectory(engine)
 # ============================
 # Examples
 # ============================
-
 if(SFENGINE_BUILD_EXAMPLES)
     # add_subdirectory(examples/sandbox)
 endif()
