@@ -69,7 +69,7 @@ class AssetManager {
     std::unordered_map<std::string, PakEntry> asset_table;  ///< Internal asset lookup table.
 
     /**
-     * @brief Decompresses zlib-compressed data.
+     * @brief Decompresses zlib-compressed data
      * @param compressed Byte buffer with compressed data.
      * @param original_size Expected size after decompression.
      * @return Decompressed byte buffer.
