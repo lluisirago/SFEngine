@@ -29,7 +29,7 @@ CheckOptions:
     value:           'NULL'
 
   - key:             readability-identifier-naming.PrivateMemberSuffix
-    value:           _
+    value:           '_'
 
   - key:             readability-identifier-naming.PrivateMemberCase
     value:           camelBack
@@ -48,7 +48,7 @@ CheckOptions:
 
   - key:             readability-identifier-naming.FunctionCase
     value:           camelBack
-    
+
   - key:             readability-identifier-naming.IgnoreMainLikeFunctions
     value:           true
 
