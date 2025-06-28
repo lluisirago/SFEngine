@@ -23,13 +23,13 @@
  * @brief Represents an entry within a packed asset file.
  */
 struct PakEntry {
-    std::string path;         ///< Logical path or identifier of the asset.
-    size_t offset;            ///< Offset from the beginning of the .pak file.
-    size_t size;              ///< Compressed size of the asset.
-    size_t original_size;     ///< Original (uncompressed) size.
-    bool compressed;          ///< Whether the asset is compressed.
-    std::string compression;  ///< Compression algorithm used (e.g., "zlib").
-    nlohmann::json meta;      ///< Arbitrary metadata for the asset (JSON object).
+    std::string path_;         ///< Logical path or identifier of the asset.
+    size_t offset_;            ///< Offset from the beginning of the .pak file.
+    size_t size_;              ///< Compressed size of the asset.
+    size_t originalSize_;      ///< Original (uncompressed) size.
+    bool compressed_;          ///< Whether the asset is compressed.
+    std::string compression_;  ///< Compression algorithm used (e.g., "zlib").
+    nlohmann::json meta_;      ///< Arbitrary metadata for the asset (JSON object).
 };
 
 /**
@@ -65,8 +65,8 @@ class AssetManager {
 
    private:
 
-    std::ifstream pak_stream;                               ///< Stream used to access the .pak file.
-    std::unordered_map<std::string, PakEntry> asset_table;  ///< Internal asset lookup table.
+    std::ifstream pakStream_;                               ///< Stream used to access the .pak file.
+    std::unordered_map<std::string, PakEntry> assetTable_;  ///< Internal asset lookup table.
 
     /**
      * @brief Decompresses zlib-compressed data
