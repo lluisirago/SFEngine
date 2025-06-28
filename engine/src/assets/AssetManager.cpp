@@ -3,7 +3,7 @@
  * @author Lluís Irago Montaña <dev.lluisirago@gmail.com>
  * @date 27/06/2025
  *
- * @brief a
+ * @brief ab
  */
 
 #include "SFEngine/assets/AssetManager.hpp"

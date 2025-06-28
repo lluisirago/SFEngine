@@ -38,7 +38,7 @@ CheckOptions:
     value:           camelBack
 
   - key:             readability-identifier-naming.PrivateMethodCase
-    value:           snake_case
+    value:           lower_case
 
   - key:             readability-identifier-naming.PublicMethodCase
     value:           camelBack
