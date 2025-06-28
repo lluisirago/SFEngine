@@ -6,7 +6,7 @@
  * @brief ab
  */
 
-#include "SFEngine/assets/AssetManager.hpp"
+#include "assets/AssetManager.hpp"
 #include <zlib.h>
 #include <iostream>
 
