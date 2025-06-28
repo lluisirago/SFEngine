@@ -14,7 +14,7 @@ git add $FILES
 echo "Running clang-tidy..."
 for file in $FILES; do
     echo "Checking $file"
-    clang-tidy $file -- -Iinclude -std=c++17
+    clang-tidy $file -- -p build
 done
 
 echo "Pre-commit checks passed"
