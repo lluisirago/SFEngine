@@ -1,12 +1,5 @@
 # SFEngine
 
-```
-   _______  ______  ______    
-  /  ____/ /  ___/ /  ___/ _  __  _____  __  _  __  _____
- /____  / /  ___/ /  __/  / \/ / / /__  / / / \/ / / /__/  
-/______/ /__/    /_____/ /_/\_/ /____/ /_/ /_/\_/ /____/  version 0.1.0
-```
-
 SFEngine is a simple C++ graphics engine designed to facilitate the development of high-performance and flexible 2D games. Includes integration with SFML, static code analysis tools, and multi-platform configuration.
 
 ---
@@ -34,5 +27,13 @@ SFEngine is a simple C++ graphics engine designed to facilitate the development 
     cmake -S . -B build
     cmake --build build
     ```
+
+
+```
+   _______  ______  ______    
+  /  ____/ /  ___/ /  ___/ _  __  _____  __  _  __  _____
+ /____  / /  ___/ /  __/  / \/ / / /__  / / / \/ / / /__/  
+/______/ /__/    /_____/ /_/\_/ /____/ /_/ /_/\_/ /____/  version 0.1.0
+```
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lluisirago/SFEngine)
