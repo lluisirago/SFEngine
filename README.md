@@ -1,10 +1,10 @@
 # SFEngine
 
-```
-   ______   _____   ______
-  |  ____| |  ___| |  ____|   SFEngine
-  |____  | |  ___| |  __|     version 0.1.0
-  |______| |_|     |______|   https://github.com/lluisirago/SFEngine.git
+```bash
+ ______   _____   ______
+|  ____| |  ___| |  ____|   SFEngine
+|____  | |  ___| |  __|     version 0.1.0
+|______| |_|     |______|   https://github.com/lluisirago/SFEngine.git
 ```
 
 SFEngine is a simple C++ graphics engine designed to facilitate the development of high-performance and flexible 2D games. Includes integration with SFML, static code analysis tools, and multi-platform configuration.
