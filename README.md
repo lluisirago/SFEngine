@@ -1,6 +1,6 @@
 # SFEngine
 
-SFEngine is a simple C++ graphics engine designed to facilitate the development of high-performance and flexible 2D games. Includes integration with SFML, static code analysis tools, and multi-platform configuration.
+Simple and Fast Engine is a C++ graphics engine designed to facilitate the development of high-performance and flexible 2D games. Includes integration with SFML, static code analysis tools, and multi-platform configuration.
 
 ---
 
