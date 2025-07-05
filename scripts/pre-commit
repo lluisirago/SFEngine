@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(cpp|hpp|h)$')
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(engine|tests|examples)/.*\.(cpp|hpp|h)$')
 
 if [[ -z "$FILES" ]]; then
     echo "No C++ files to check"
@@ -14,7 +14,7 @@ git add $FILES
 echo "Running clang-tidy..."
 for file in $FILES; do
     echo "Checking $file"
-    clang-tidy $file -- -p build
+    clang-tidy -p build $file
 done
 
 echo "Pre-commit checks passed"

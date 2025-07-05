@@ -43,8 +43,6 @@ include(FetchDependencies)
 # Dependencies
 # ============================
 find_package(SFML 2.6.1 COMPONENTS system window graphics audio REQUIRED)
-fetch_json()
-fetch_zlib()
 
 # ============================
 # Engine Target

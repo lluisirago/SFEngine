@@ -15,7 +15,7 @@ add_library(SFEngine::SFEngine ALIAS SFEngine)
 target_include_directories(SFEngine
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vendor>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/vendor>
         $<INSTALL_INTERFACE:include>
 )
 
@@ -37,7 +37,7 @@ target_sources(SFEngine PRIVATE ${ENGINE_SRC} ${ENGINE_HEADERS})
 
 
 # ============================
-# Link SFML as required dependency
+# Link required dependencies
 # ============================
 target_link_libraries(SFEngine
     PRIVATE

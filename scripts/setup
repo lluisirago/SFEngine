@@ -26,7 +26,6 @@ warn() {
 }
 
 ### FUNCTIONS ###
-
 install_cmake() {
     if ! command -v cmake >/dev/null 2>&1; then
         log "CMake is not installed"
@@ -155,7 +154,6 @@ install_precommit_hook() {
 }
 
 ### MAIN EXECUTION ###
-
 log "--- Starting Setup ---"
 
 log "Checking CMake..."
