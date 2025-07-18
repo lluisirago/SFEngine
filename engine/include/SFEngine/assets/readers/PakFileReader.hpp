@@ -22,7 +22,6 @@ namespace sfe {
     class PakFileReader : public sfe::AssetReader {
        public:
 
-        PakFileReader() = default;
         explicit PakFileReader(const std::string& filename);
 
         bool open(const std::string& filename);

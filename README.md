@@ -33,7 +33,7 @@ Simple and Fast Engine is a C++ graphics engine designed to facilitate the devel
    _______  ______  ______  __  ___  _______  ___  __  ___  ______
   /  ____/ /  ___/ /  ___/ /  \/  / /  ____  /  / /  \/  / /  ___/
  /____  / /  ___/ /  __/  / _    / /  /_  / /  / / _    / /  __/  
-/______/ /__/    /_____/ /_/ \__/ /______/ /__/ /_/ \__/ /_____/  version 0.1.0
+/______/ /__/    /_____/ /_/ \__/ /______/ /__/ /_/ \__/ /_____/  version 0.1.1
 ```
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lluisirago/SFEngine)
