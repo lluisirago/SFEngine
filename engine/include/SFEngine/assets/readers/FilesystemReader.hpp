@@ -32,27 +32,24 @@ namespace sfe {
          *
          * @param assetRoot Path to the assets directory (relative)
          *
-         * @throws std::invalid_argument if assetRoot is an empty or absolute path.
-         * @warning Logs a warning if assetRoot is an invalid path.
+         * @throws std::invalid_argument if assetRoot is an empty, absolute or invalid path (when exceptions are
+         * enabled).
+         * @warning Errors are logged (when logging is enabled).
          */
         explicit FilesystemReader(const string& assetRoot);
 
         /**
          * @brief Get the asset data from its filename
          *
-         * The asset looked for will be assetRoot_/filename. Recommendation: enable exception mode with throwOnFailure
-         * for essential assets only.
+         * The asset looked for will be assetRoot_/filename. It is used buffered file reading with size-based
+         * preallocation using seek/tell.
          *
          * @param filename Name of the asset file (located in assetRoot_)
-         * @param throwOnFailure Exception mode
-         * @return std::vector<char> Asset data. Returns an empty vector if the file does not exist or cannot be read.
+         * @return std::vector<char> Asset data. Returns an empty vector if an error ocurr and exceptions are disabled.
          *
-         * @throws std::runtime_error if asset file cannot be opened and exception mode is enabled.
-         * @throws std::runtime_error if asset file size is invalid and exception mode is enabled.
-         * @throws std::runtime_error if asset file cannot be read and exception mode is enabled.
-         * @warning Logs a warning if the file cannot be opened and exceptions are disabled.
-         * @warning Logs a warning if the file size is invalid and exceptions are disabled.
-         * @warning Logs a warning if the file cannot be read and exceptions are disabled.
+         * @throws std::runtime_error if the file cannot be opened, has invalid size, or cannot be read (when exceptions
+         * are enabled).
+         * @warning Errors are logged (when logging is enabled).
          */
         [[nodiscard]] vector<char> getAsset(const string& filename) override;
 
@@ -62,8 +59,11 @@ namespace sfe {
          * The asset metadata looked for will be assetRoot_/filename.meta.json
          *
          * @param filename Name of the asset file (located in assetRoot_)
-         * @return json Asset metadata. Returns an empty JSON object if the file does not exist or cannot be
-         * read.
+         * @return nlohmann::json Asset metadata. Returns an empty JSON object if the file does not exist or cannot be
+         * read and exceptions are disabled.
+         *
+         * @throws std::runtime_error if the meta file cannot be opened (when exceptions are enabled).
+         * @warning Errors are logged (when logging is enabled).
          */
         [[nodiscard]] json getMetadata(const string& filename) const override;
 

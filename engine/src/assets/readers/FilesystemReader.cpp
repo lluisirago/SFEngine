@@ -23,8 +23,7 @@ namespace sfe {
      *
      * @param assetRoot Path to the assets directory (relative)
      *
-     * @throws std::invalid_argument if assetRoot is an empty, absolute or invalid path (when exceptions are
-     * enabled).
+     * @throws std::invalid_argument if assetRoot is an empty, absolute or invalid path (when exceptions are enabled).
      * @warning Errors are logged (when logging is enabled).
      */
     FilesystemReader::FilesystemReader(const string& assetRoot) : assetRoot_(assetRoot) {
@@ -50,23 +49,24 @@ namespace sfe {
     vector<char> FilesystemReader::getAsset(const string& filename) {
         filesystem::path assetPath = filesystem::path(assetRoot_) / filename;
         ifstream in(assetPath, ios::binary);
-        SFE_THROW_IF(!in, runtime_error, "Failed to open asset file: " + assetPath.string());
-        return {};
+        bool fileNotOpened = !in;
+        SFE_THROW_OR_RETURN_IF(!in, runtime_error, "Failed to open asset file: " + assetPath.string(), {});
 
         // Seek to the end of the file to get its size
         in.seekg(0, ios::end);
         streamsize size = in.tellg();
-        SFE_THROW_IF(size <= 0 || static_cast<uint64_t>(size) > static_cast<uint64_t>(numeric_limits<size_t>::max()),
-                     runtime_error,
-                     "Invalid asset file size: " + assetPath.string());
-        return {};
+        SFE_THROW_OR_RETURN_IF(
+            size <= 0 || static_cast<uint64_t>(size) > static_cast<uint64_t>(numeric_limits<size_t>::max()),
+            runtime_error,
+            "Invalid asset file size: " + assetPath.string(),
+            {});
 
         // Seek to the begining to read the file
         in.seekg(0, ios::beg);
 
         vector<char> buffer(static_cast<size_t>(size));
-        SFE_THROW_IF(!in.read(buffer.data(), size), runtime_error, "Failed to read asset file: " + assetPath.string());
-        return {};
+        SFE_THROW_OR_RETURN_IF(
+            !in.read(buffer.data(), size), runtime_error, "Failed to read asset file: " + assetPath.string(), {});
         return buffer;
     }
 
@@ -77,13 +77,15 @@ namespace sfe {
      *
      * @param filename Name of the asset file (located in assetRoot_)
      * @return nlohmann::json Asset metadata. Returns an empty JSON object if the file does not exist or cannot be
-     * read.
+     * read and exceptions are disabled.
+     *
+     * @throws std::runtime_error if the meta file cannot be opened (when exceptions are enabled).
+     * @warning Errors are logged (when logging is enabled).
      */
     json FilesystemReader::getMetadata(const string& filename) const {
         filesystem::path metaPath = filesystem::path(assetRoot_) / (filename + ".meta.json");
         ifstream in(metaPath);
-        SFE_THROW_IF(!in, runtime_error, "Failed to open meta file: " + metaPath.string());
-        return {};
+        SFE_THROW_OR_RETURN_IF(!in, runtime_error, "Failed to open meta file: " + metaPath.string(), {});
         json meta;
         in >> meta;
         return meta;

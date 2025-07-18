@@ -47,7 +47,16 @@ using namespace std;
             throw ExceptionType(message);          \
         }                                          \
     } while (0)
+
+#define SFE_THROW_OR_RETURN_IF(cond, ExceptionType, message, retval) SFE_THROW_IF(cond, ExceptionType, message)
 #else
 #define SFE_THROW(ExceptionType, message) SFE_LOG_WARN(message)
 #define SFE_THROW_IF(cond, ExceptionType, message) SFE_LOG_WARN_IF(cond, message)
+#define SFE_THROW_OR_RETURN_IF(cond, ExceptionType, message, retval) \
+    do {                                                             \
+        if (cond) {                                                  \
+            SFE_LOG_WARN_IF(cond, message)                           \
+            return retval;                                           \
+        }                                                            \
+    } while (0)
 #endif
