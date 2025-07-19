@@ -4,7 +4,7 @@ using namespace std;
 
 // === Logging Macros ===
 // Logging enabled by default
-#ifndef SFE_ENABLE_LOGGING
+#ifndef SFE_LOGGING
 #define SFE_LOGGING 1
 #endif
 
