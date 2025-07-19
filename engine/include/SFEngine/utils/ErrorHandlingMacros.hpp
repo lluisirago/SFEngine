@@ -55,7 +55,7 @@ using namespace std;
 #define SFE_THROW_OR_RETURN_IF(cond, ExceptionType, message, retval) \
     do {                                                             \
         if (cond) {                                                  \
-            SFE_LOG_WARN_IF(cond, message)                           \
+            SFE_LOG_WARN(message)                           \
             return retval;                                           \
         }                                                            \
     } while (0)
