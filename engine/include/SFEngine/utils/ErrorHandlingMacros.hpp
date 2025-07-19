@@ -10,19 +10,19 @@ using namespace std;
 
 #if SFE_LOGGING
 #include <iostream>
-#define SFE_LOG_ERROR(message) cerr << "[SFE ERROR] " << message << endl
-#define SFE_LOG_WARN(message) cerr << "[SFE WARN] " << message << endl
-#define SFE_LOG_INFO(message) cout << "[SFE INFO] " << message << endl
+#define SFE_LOG_ERROR(message) cerr << "[SFE][ERROR] " << message << endl
+#define SFE_LOG_WARN(message) cerr << "[SFE][WARN] " << message << endl
+#define SFE_LOG_INFO(message) cout << "[SFE][INFO] " << message << endl
 
-#define SFE_LOG_WARN_IF(cond, message)   \
+#define SFE_LOG_WARN_IF(condition, message)   \
     do {                                 \
-        if (cond) SFE_LOG_WARN(message); \
+        if (condition) SFE_LOG_WARN(message); \
     } while (0)
 #else
 #define SFE_LOG_ERROR(message)
 #define SFE_LOG_WARN(message)
 #define SFE_LOG_INFO(message)
-#define SFE_LOG_WARN_IF(cond, message)
+#define SFE_LOG_WARN_IF(condition, message)
 #endif
 
 // === Exceptions Macros ===
@@ -40,21 +40,21 @@ using namespace std;
                                           \
     } while (0)
 
-#define SFE_THROW_IF(cond, ExceptionType, message) \
+#define SFE_THROW_IF(condition, ExceptionType, message) \
     do {                                           \
-        if (cond) {                                \
+        if (condition) {                                \
             SFE_LOG_ERROR(message);                \
             throw ExceptionType(message);          \
         }                                          \
     } while (0)
 
-#define SFE_THROW_OR_RETURN_IF(cond, ExceptionType, message, retval) SFE_THROW_IF(cond, ExceptionType, message)
+#define SFE_THROW_OR_RETURN_IF(condition, ExceptionType, message, retval) SFE_THROW_IF(condition, ExceptionType, message)
 #else
 #define SFE_THROW(ExceptionType, message) SFE_LOG_WARN(message)
-#define SFE_THROW_IF(cond, ExceptionType, message) SFE_LOG_WARN_IF(cond, message)
-#define SFE_THROW_OR_RETURN_IF(cond, ExceptionType, message, retval) \
+#define SFE_THROW_IF(condition, ExceptionType, message) SFE_LOG_WARN_IF(condition, message)
+#define SFE_THROW_OR_RETURN_IF(condition, ExceptionType, message, retval) \
     do {                                                             \
-        if (cond) {                                                  \
+        if (condition) {                                                  \
             SFE_LOG_WARN(message)                           \
             return retval;                                           \
         }                                                            \
