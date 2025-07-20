@@ -10,9 +10,9 @@ using namespace std;
 
 #if SFE_LOGGING
 #include <iostream>
-#define SFE_LOG_ERROR(message) cerr << "[SFE ERROR] " << message << endl
-#define SFE_LOG_WARN(message) cerr << "[SFE WARN] " << message << endl
-#define SFE_LOG_INFO(message) cout << "[SFE INFO] " << message << endl
+#define SFE_LOG_ERROR(message) cerr << "[SFE ERROR] " << (message) << endl
+#define SFE_LOG_WARN(message) cerr << "[SFE WARN] " << (message) << endl
+#define SFE_LOG_INFO(message) cout << "[SFE INFO] " << (message) << endl
 
 #define SFE_LOG_WARN_IF(cond, message)   \
     do {                                 \

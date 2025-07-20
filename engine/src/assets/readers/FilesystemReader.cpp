@@ -49,7 +49,6 @@ namespace sfe {
     vector<char> FilesystemReader::getAsset(const string& filename) {
         filesystem::path assetPath = filesystem::path(assetRoot_) / filename;
         ifstream in(assetPath, ios::binary);
-        bool fileNotOpened = !in;
         SFE_THROW_OR_RETURN_IF(!in, runtime_error, "Failed to open asset file: " + assetPath.string(), {});
 
         // Seek to the end of the file to get its size
